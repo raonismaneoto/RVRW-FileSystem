@@ -11,6 +11,8 @@ def create_disk_file():
 def disk_file_exists():
     return os.path.exists(FILE_NAME)
 
-if not disk_file_exists(): create_disk_file()
-mkfs(FILE_NAME)
+def setup():
+    if not disk_file_exists(): create_disk_file()
+    mkfs(FILE_NAME)
 
+setup()
