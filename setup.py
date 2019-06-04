@@ -4,7 +4,7 @@ from mkfs import mkfs
 FILE_NAME = 'disk'
 SUPER_BLOCK_SIZE = 2 * 1024 * 1024
 INODE_SIZE = 4 * 1024 * 1024
-BLOCK_SIZE = 16 * 1024 * 1024
+BLOCK_SIZE = 14 * 1024 * 1024
 FILE_SIZE = 20 * 1024 * 1024
 
 def create_disk_file():
