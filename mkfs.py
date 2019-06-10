@@ -1,8 +1,10 @@
-import SuperBlock
+from super_block import SuperBlock
+from inode import Inode
+from block import Block
 
 SIZE = 20*1024
 
-def mfks(disk_path):
+def mkfs(disk_path):
 
 	f_blocks_list = create_f_blocks_list()
 
