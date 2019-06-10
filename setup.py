@@ -2,11 +2,17 @@ from os.path import exists
 from mkfs import mkfs
 
 FILE_NAME = 'disk'
+SUPER_BLOCK_SIZE = 2 * 1024 * 1024
+INODE_SIZE = 4 * 1024 * 1024
+BLOCK_SIZE = 14 * 1024 * 1024
 FILE_SIZE = 20 * 1024 * 1024
 
 def create_disk_file():
   f = open(FILE_NAME, 'wb')
-  f.write("\0" * FILE_SIZE)
+  f.write('$' * SUPER_BLOCK_SIZE)
+  f.write('!' * INODE_SIZE)
+  f.write('@' * BLOCK_SIZE)
+  f.close()
 
 def disk_file_exists():
   return exists(FILE_NAME)
