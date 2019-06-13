@@ -1,4 +1,6 @@
-class SuperBlock():
+from Fs import Fs
+
+class SuperBlock(Fs):
 
 	def __init__(self, size, f_blocks_counter, f_blocks_list, isize, ifree_list):
 		self.size = size

@@ -6,6 +6,7 @@ class Fs():
         pass
     
     def bytefy(self):
+      #TODO each object must implement this method to limit the bytearray size.
         jsonfied = json.dumps(self.__dict__)
         return bytearray(jsonfied)
     

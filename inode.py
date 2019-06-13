@@ -1,6 +1,8 @@
+from Fs import Fs
+
 class Inode(Fs):
 
-	def __init__(self, number, owner, group, f_type, permissions, last_modification, last_f_modification, last_access, disk_adresses, size, status, logical_device, number, reference_count):
+	def __init__(self, number, owner, group, f_type, permissions, last_modification, last_f_modification, last_access, disk_adresses, size, status, logical_device, number, reference_count, links):
 		### These are the fields of the inode on disk
 		self.number = number
 		self.owner = owner
