@@ -4,7 +4,6 @@ import os
 
 def load(bytearr):
     stringfied = str(bytearr)
-    print stringfied
     return json.loads(stringfied)
 
 def save(bytearr, offset, filepath):
@@ -25,3 +24,15 @@ def instance_from_obj(class_constructor, obj):
     for key in obj:
         setattr(instance, key, obj[key])
     return instance
+
+def get_sb():
+    sb_bytearr = read('disk', 0, 2*1024*1024)
+    sb_json = load(sb_bytearr)
+    sb_instance = instance_from_obj(SuperBlock, sb_json)
+    return sb_instance
+
+def get_inode():
+    pass
+    
+def get_block():
+    pass

@@ -27,7 +27,11 @@ class Inode(Fs):
         self.number = number
         self.reference_count = reference_count
         self.start_offset = 2*1024*1024 + 1
+        self.block_list = []
 
     def __init__(self):
         self.start_offset = 2*1024*1024 + 1
+
+    def write(self):
+    	pass
 
