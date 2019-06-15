@@ -3,6 +3,7 @@ from inode import Inode
 from block import Block
 import os
 import pickle
+import util
 
 SIZE = 20*1024
 
@@ -14,42 +15,29 @@ def mkfs(disk_path):
 
 	super_block = SuperBlock(SIZE, 100, f_blocks_list, 15, inodes_list)
 
-	save_from(super_block, '$', disk_path)
+	util.save(super_block.bytefy(), 0, 'disk')
 
 
 def create_f_blocks_list():
 	head = Block()
 	current = head
+	l = []
 	for i in xrange(100):
+		file_position = current.start_offset +(4096*i)
+		util.save(current.bytefy(), file_position, 'disk')
 		current.next = Block()
 		current = current.next
-		save_from(current, '@', 'disk')
-	return head
+		l.append(file_position)
+	return l
 
 def create_inodes_list():
 	head = Inode()
 	current = head
+	l = []
 	for i in xrange(15):
+		file_position = current.start_offset +(4096*i)
+		util.save(current.bytefy(), file_position, 'disk')
 		current.next = Inode()
 		current = current.next
-		save_from(current, '!', 'disk')
-	return head
-
-def save(sb, disk_path):
-	import pickle
-	with open(disk_path, "wb") as disk:
-		disk.seek(0, os.SEEK_SET)
-		pickle.dump(sb, disk)
-		disk.close()
-
-def save_from(object, mark_char, disk_path):
-	with open(disk_path, "rw+") as disk:
-		byte = 0
-		for line in disk:
-			for char in line:
-				if char == mark_char:
-					byte = disk.tell()
-					disk.seek(byte, os.SEEK_SET)
-					pickle.dump(object, disk)
-					disk.close()
-					return
+		l.append(file_position)
+	return l
