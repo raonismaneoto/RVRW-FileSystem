@@ -1,4 +1,5 @@
 from Fs import Fs
+import util
 
 class Inode(Fs):
 
@@ -18,7 +19,6 @@ class Inode(Fs):
         #Number of links to the file
         self.links = links
         self.disk_addresses = disk_addresses
-        self.size = size
         ### The next fields are available to the incore inode
         # pag. 63
         self.status = status
@@ -29,9 +29,12 @@ class Inode(Fs):
         self.start_offset = 2*1024*1024 + 1
         self.block_list = []
 
-    def write(self):
-    	pass
+    def write(self, data):
+    	block = util.get_block(self.block_list[0])
+    	block.data = data
+    	util.save(block.bytefy(), block.get_offset(), 'disk')
+    	util.save(self.bytefy(), self.get_offset(), 'disk')
 
     def get_offset(self):
-    	return self.start_offset + (self.number * self.size)
+    	return self.start_offset + (self.number * self.size) +1
 

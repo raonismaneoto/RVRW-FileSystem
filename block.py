@@ -9,4 +9,4 @@ class Block(Fs):
 		self.data = []
 
 	def get_offset(self):
-		return self.start_offset + (self.number * self.size)
+		return self.start_offset + (self.number * self.size) + 1
