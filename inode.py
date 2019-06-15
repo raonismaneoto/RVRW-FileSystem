@@ -2,9 +2,9 @@ from Fs import Fs
 
 class Inode(Fs):
 
-    def __init__(self, number, owner, group, f_type, permissions, last_modification, 
-    last_f_modification, last_access, disk_adresses, size, status, logical_device, 
-    reference_count, links):
+    def __init__(self, number=None, owner=None, group=None, f_type=None, permissions=None, last_modification=None, 
+    last_f_modification=None, last_access=None, disk_addresses=None, size=None, status=None, logical_device=None, 
+    reference_count=None, links=None):
         ### These are the fields of the inode on disk
         self.owner = owner
         self.group = group
@@ -17,7 +17,7 @@ class Inode(Fs):
         self.last_access = last_access
         #Number of links to the file
         self.links = links
-        self.disk_adresses = disk_adresses
+        self.disk_addresses = disk_addresses
         self.size = size
         ### The next fields are available to the incore inode
         # pag. 63
@@ -29,9 +29,9 @@ class Inode(Fs):
         self.start_offset = 2*1024*1024 + 1
         self.block_list = []
 
-    def __init__(self):
-        self.start_offset = 2*1024*1024 + 1
-
     def write(self):
     	pass
+
+    def get_offset(self):
+    	return self.start_offset + (self.number * self.size)
 

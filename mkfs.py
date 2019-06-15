@@ -14,7 +14,7 @@ def mkfs(disk_path):
 
 	inodes_list = create_inodes_list()
 
-	super_block = SuperBlock(SIZE, 100, f_blocks_list, 15, inodes_list)
+	super_block = SuperBlock(SIZE, 100, f_blocks_list, 100, inodes_list)
 
 	util.save(super_block.bytefy(), 0, 'disk')
 
@@ -26,36 +26,49 @@ def create_f_blocks_list():
 	current = head
 	l = []
 	for i in xrange(100):
-		file_position = current.start_offset +(4096*i)
+		current.size = 4096
+		current.number = i
+		file_position = current.get_offset()
 		util.save(current.bytefy(), file_position, 'disk')
+		l.append(current.number)
 		current.next = Block()
 		current = current.next
-		l.append(file_position)
 	return l
 
 def create_inodes_list():
 	head = Inode()
 	current = head
 	l = []
-	for i in xrange(15):
-		file_position = current.start_offset +(4096*i)
+	for i in xrange(100):
+		current.size = 4096*12
+		current.number = i
+		file_position = current.get_offset()
 		util.save(current.bytefy(), file_position, 'disk')
+		l.append(current.number)
 		current.next = Inode()
 		current = current.next
-		l.append(file_position)
 	return l
 
 
 def create_root_dir():
 	sb = util.get_sb()
 	inode = util.get_inode(sb.ifree_list[0])
-	blocks = [sb.f_blocks_list[0]]
-	inode.blocks_list = blocks
-	set_root_inode_props(inode)
-	save_root_dir(sb, inode, blocks)
+	blocks = [util.get_block(sb.f_blocks_list[0])]
+	sb.ifree_list.pop(0)
+	sb.f_blocks_list.pop(0)
+	set_root_inode_props(inode, blocks)
+	save_root_dir(sb, inode)
 
-def set_root_inode_props(inode):
-	pass
+def set_root_inode_props(inode, blocks):
+	inode.number = 1
+	inode.owner = 'root'
+	inode.group = 'root'
+	inode.f_type = 'dir'
+	inode.permissions = 111111111
+	inode.links = 1
+	inode.disk_addresses = 1
+	inode.block_list = blocks
 
-def save_root_dir(sb, inode, blocks):
-	pass
+def save_root_dir(sb, inode):
+	util.save(sb.bytefy(), 0, 'disk')
+	util.save(inode.bytefy(), inode.get_offset(), 'disk')

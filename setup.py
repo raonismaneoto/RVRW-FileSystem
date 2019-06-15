@@ -9,9 +9,6 @@ FILE_SIZE = 20 * 1024 * 1024
 
 def create_disk_file():
   f = open(FILE_NAME, 'wb')
-  f.write('$' * SUPER_BLOCK_SIZE)
-  f.write('!' * INODE_SIZE)
-  f.write('@' * BLOCK_SIZE)
   f.close()
 
 def disk_file_exists():
