@@ -28,6 +28,7 @@ class Inode(Fs):
         self.reference_count = reference_count
         self.start_offset = 2*1024*1024 + 1
         self.block_list = []
+        self.file_name = ''
 
     def write(self, data):
     	block = util.get_block(self.block_list[0])

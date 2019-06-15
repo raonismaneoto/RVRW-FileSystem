@@ -59,6 +59,8 @@ def create_root_dir():
 	util.create_empty_block(101)
 	sb.ifree_list.append(101)
 	sb.f_blocks_list.append(101)
+	sb.bsize += 1
+	sb.isize += 1
 	set_root_inode_props(inode, blocks)
 	save_root_dir(sb, inode)
 
@@ -70,7 +72,9 @@ def set_root_inode_props(inode, blocks):
 	inode.links = 1
 	inode.disk_addresses = 1
 	inode.block_list = blocks
+	inode.file_name = 'root'
 
 def save_root_dir(sb, inode):
+	sb.root_size = inode.get_size()
 	util.save(sb.bytefy(), 0, 'disk')
 	util.save(inode.bytefy(), inode.get_offset(), 'disk')
