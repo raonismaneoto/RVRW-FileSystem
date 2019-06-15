@@ -15,17 +15,29 @@ def create_file(args):
 
 def read_file(args):
 	file_name = args[0]
+	inode_number = -1
+	blist = root_inode.block_list
+	inode = {}
+	for block_number in blist:
+		block = util.get_block(block_number)
+		for file_descriptor in block.data:
+			if type(file_descriptor) == dict and file_name in file_descriptor.keys():
+				inode_number = file_descriptor[file_name]
+	if inode_number != -1:
+		inode = util.get_inode(inode_number)
+	print inode.bytefy()
 
-check_file_oneness(file_name):
+def check_file_oneness(file_name):
 	blist = root_inode.block_list
 	for block_number in blist:
 		block = util.get_block(block_number)
 		for file_descriptor in block.data:
-			if file_name in file_descriptor.keys():
+			if type(file_descriptor) == dict and file_name in file_descriptor.keys():
 				raise Exception("The file with name %s already exists" %file_name)
 
 menu_options = {
-	'create': create_file
+	'create': create_file,
+	'read': read_file
 }
 
 sb = util.get_sb()

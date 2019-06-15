@@ -32,7 +32,7 @@ class Inode(Fs):
 
     def write(self, data):
     	block = util.get_block(self.block_list[0])
-    	block.data = data
+    	block.data.append(data)
     	util.save(block.bytefy(), block.get_offset(), 'disk')
     	util.save(self.bytefy(), self.get_offset(), 'disk')
 
