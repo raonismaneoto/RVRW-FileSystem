@@ -42,9 +42,9 @@ def print_data(inode):
 
 def write_file(args):
 	file_name = args[0]
-	data = args[1]
+	data = [arg for arg in args[1:]]
 	inode = read_file([file_name])
-	print inode.__dict__
+
 	if inode == {}:
 		raise Exception("The file %s does not exist" %file_name)
 
