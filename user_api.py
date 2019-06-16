@@ -1,4 +1,5 @@
 import util
+import json
 
 def create_file(args):
 	file_name = args[0]
@@ -23,9 +24,28 @@ def read_file(args):
 		for file_descriptor in block.data:
 			if type(file_descriptor) == dict and file_name in file_descriptor.keys():
 				inode_number = file_descriptor[file_name]
+				break
 	if inode_number != -1:
 		inode = util.get_inode(inode_number)
-	print inode.bytefy()
+	print_data(inode)
+	return inode
+
+def print_data(inode):
+	data = ''
+	for block in inode.block_list:
+		block = util.get_block(block)
+		data += json.dumps(block.data)
+	print json.loads(data)
+
+def write_file(args):
+	file_name = args[0]
+	data = args[1]
+
+	inode = read_file(file_name)
+	if inode == {}:
+		raise Exception("The file %s does not exist", %file_name)
+
+	inode.write(data)
 
 def check_file_oneness(file_name):
 	blist = root_inode.block_list
@@ -37,7 +57,8 @@ def check_file_oneness(file_name):
 
 menu_options = {
 	'create': create_file,
-	'read': read_file
+	'read': read_file,
+	'write': write_file
 }
 
 sb = util.get_sb()
