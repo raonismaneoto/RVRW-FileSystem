@@ -31,19 +31,22 @@ def read_file(args):
 	return inode
 
 def print_data(inode):
+	if inode == {}:
+		print inode
+		return
 	data = ''
 	for block in inode.block_list:
 		block = util.get_block(block)
 		data += json.dumps(block.data)
-	print json.loads(data)
+	print data
 
 def write_file(args):
 	file_name = args[0]
 	data = args[1]
-
-	inode = read_file(file_name)
+	inode = read_file([file_name])
+	print inode.__dict__
 	if inode == {}:
-		raise Exception("The file %s does not exist", %file_name)
+		raise Exception("The file %s does not exist" %file_name)
 
 	inode.write(data)
 

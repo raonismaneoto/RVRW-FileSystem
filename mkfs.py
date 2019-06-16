@@ -1,5 +1,4 @@
 from super_block import SuperBlock
-from block import Block
 import os
 import pickle
 import util
@@ -21,7 +20,7 @@ def mkfs(disk_path):
 
 
 def create_f_blocks_list():
-	head = Block()
+	head = util.Block()
 	current = head
 	l = []
 	for i in xrange(100):
@@ -30,7 +29,7 @@ def create_f_blocks_list():
 		file_position = current.get_offset()
 		util.save(current.bytefy(), file_position, 'disk')
 		l.append(current.number)
-		current.next = Block()
+		current.next = util.Block()
 		current = current.next
 	return l
 

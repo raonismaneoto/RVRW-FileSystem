@@ -32,13 +32,14 @@ class Inode(Fs):
         self.start_offset = 2*1024*1024 + 1
         self.block_list = []
         self.file_name = ''
+        self.size = 4096*12
 
     def write(self, data):
     	blocks_quantity = self._get_blocks_quantity(data)
     	blocks_list = self._get_available_blocks(blocks_quantity)
     	data = bytearray(json.dumps(data))
-    	for block in block_list:
-    		block.write(data[:block_size-1])
+    	for block in blocks_list:
+    		block.write(util.load(data[:(block_size-1)]))
     	util.save(self.bytefy(), self.get_offset(), 'disk')
 
     def get_offset(self):
@@ -55,7 +56,7 @@ class Inode(Fs):
     	available_blocks = []
     	for block in self.block_list:
     		block_instance = util.get_block(block)
-    		if not blocks_quantity.is_full():
+    		if not block_instance.is_full():
     			available_blocks.append(block_instance)
     	missing_blocks = blocks_quantity - len(available_blocks)
     	has_enough_blocks = missing_blocks <= 0
@@ -63,7 +64,7 @@ class Inode(Fs):
     	if not has_enough_blocks:
     		for i in xrange(missing_blocks):
     			b_number = sb.get_block_number()
-    			self.blocks_list.append(b_number)
+    			self.block_list.append(b_number)
     			util.create_empty_block(b_number)
     			available_blocks.append(util.get_block(b_number))
     	return available_blocks

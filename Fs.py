@@ -1,6 +1,6 @@
 import json
 
-class Fs():
+class Fs(object):
 
     def __init__(self):
         pass
@@ -14,7 +14,7 @@ class Fs():
     def __getitem__(self, key):
         if key in dir(self):
             return self.__dict__[key]
-        super(Fs, self).__getitem__(key)
+        return None
     
     def get_size(self):
         return len(bytearray(json.dumps(self.__dict__)))

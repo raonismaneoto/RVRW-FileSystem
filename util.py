@@ -11,7 +11,8 @@ null = None
 def load(bytearr):
     stringfied = str(bytearr)
     null_index = find_null_index(stringfied)
-    stringfied = stringfied[:null_index]
+    if null_index != -1:
+        stringfied = stringfied[:null_index]
     return eval(json.loads(json.dumps(stringfied)))
 
 def save(bytearr, offset, filepath):
