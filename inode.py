@@ -1,10 +1,14 @@
 from Fs import Fs
+import util
+import json
+
+block_size = 4096
 
 class Inode(Fs):
 
-    def __init__(self, number, owner, group, f_type, permissions, last_modification, 
-    last_f_modification, last_access, disk_adresses, size, status, logical_device, 
-    reference_count, links):
+    def __init__(self, number=None, owner=None, group=None, f_type=None, permissions=None, last_modification=None, 
+    last_f_modification=None, last_access=None, disk_addresses=None, size=None, status=None, logical_device=None, 
+    reference_count=None, links=None):
         ### These are the fields of the inode on disk
         self.owner = owner
         self.group = group
@@ -17,8 +21,7 @@ class Inode(Fs):
         self.last_access = last_access
         #Number of links to the file
         self.links = links
-        self.disk_adresses = disk_adresses
-        self.size = size
+        self.disk_addresses = disk_addresses
         ### The next fields are available to the incore inode
         # pag. 63
         self.status = status
@@ -27,7 +30,42 @@ class Inode(Fs):
         self.number = number
         self.reference_count = reference_count
         self.start_offset = 2*1024*1024 + 1
+        self.block_list = []
+        self.file_name = ''
+        self.size = 4096*12
 
-    def __init__(self):
-        self.start_offset = 2*1024*1024 + 1
+    def write(self, data):
+    	blocks_quantity = self._get_blocks_quantity(data)
+    	blocks_list = self._get_available_blocks(blocks_quantity)
+    	data = bytearray(json.dumps(data))
+    	for block in blocks_list:
+    		block.write(util.load(data[:(block_size-1)]))
+    	util.save(self.bytefy(), self.get_offset(), 'disk')
+
+    def get_offset(self):
+    	return self.start_offset + (self.number * self.size) +1
+
+    def _get_blocks_quantity(self, data):
+    	data_size = len(bytearray(json.dumps(data)))
+    	blocks_quantity = data_size/block_size
+    	if data_size%block_size != 0:
+    		blocks_quantity += 1
+    	return blocks_quantity
+
+    def _get_available_blocks(self, blocks_quantity):
+    	available_blocks = []
+    	for block in self.block_list:
+    		block_instance = util.get_block(block)
+    		if not block_instance.is_full():
+    			available_blocks.append(block_instance)
+    	missing_blocks = blocks_quantity - len(available_blocks)
+    	has_enough_blocks = missing_blocks <= 0
+    	sb = util.get_sb()
+    	if not has_enough_blocks:
+    		for i in xrange(missing_blocks):
+    			b_number = sb.get_block_number()
+    			self.block_list.append(b_number)
+    			util.create_empty_block(b_number)
+    			available_blocks.append(util.get_block(b_number))
+    	return available_blocks
 
