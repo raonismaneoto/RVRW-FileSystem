@@ -14,7 +14,6 @@ def create_file(args):
   util.create_empty_block(sb.bsize-1)
   util.save(inode.bytefy(), inode.get_offset(), 'disk')
   util.save(sb.bytefy(), 0, 'disk')
-  print util.get_inode(inode.number).bytefy()
 
 def read_file(args):
   sb, root_inode = get_main_obj()
@@ -23,7 +22,6 @@ def read_file(args):
   blist = root_inode.block_list
   inode = {}
   for block_number in blist:
-    print block_number
     block = util.get_block(block_number)
     for file_descriptor in block.data:
       if type(file_descriptor) == dict and file_name in file_descriptor.keys():
@@ -36,7 +34,7 @@ def read_file(args):
 
 def print_data(inode):
   if inode == {}:
-    print inode
+    print 'There is no file attached to this name'
     return
   data = ''
   for block in inode.block_list:
