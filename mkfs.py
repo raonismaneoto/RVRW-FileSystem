@@ -50,14 +50,14 @@ def create_inodes_list():
 
 def create_root_dir():
 	sb = util.get_sb()
-	inode = util.get_inode(sb.ifree_list[1])
+	inode = util.get_inode(sb.ifree_list[0])
 	blocks = [sb.f_blocks_list[0]]
-	sb.ifree_list.pop(1)
+	sb.ifree_list.pop(0)
 	sb.f_blocks_list.pop(0)
-	util.create_empty_inode(101)
-	util.create_empty_block(101)
-	sb.ifree_list.append(101)
-	sb.f_blocks_list.append(101)
+	util.create_empty_inode(100)
+	util.create_empty_block(100)
+	sb.ifree_list.append(100)
+	sb.f_blocks_list.append(100)
 	sb.bsize += 1
 	sb.isize += 1
 	set_root_inode_props(inode, blocks)

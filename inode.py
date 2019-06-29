@@ -53,19 +53,19 @@ class Inode(Fs):
     	return blocks_quantity
 
     def _get_available_blocks(self, blocks_quantity):
-    	available_blocks = []
-    	for block in self.block_list:
-    		block_instance = util.get_block(block)
-    		if not block_instance.is_full():
-    			available_blocks.append(block_instance)
-    	missing_blocks = blocks_quantity - len(available_blocks)
-    	has_enough_blocks = missing_blocks <= 0
-    	sb = util.get_sb()
-    	if not has_enough_blocks:
-    		for i in xrange(missing_blocks):
-    			b_number = sb.get_block_number()
-    			self.block_list.append(b_number)
-    			util.create_empty_block(b_number)
-    			available_blocks.append(util.get_block(b_number))
-    	return available_blocks
+      available_blocks = []
+      for block in self.block_list:
+        block_instance = util.get_block(block)
+        if not block_instance.is_full():
+          available_blocks.append(block_instance)
+      missing_blocks = blocks_quantity - len(available_blocks)
+      has_enough_blocks = missing_blocks <= 0
+      sb = util.get_sb()
+      if not has_enough_blocks:
+        for i in xrange(missing_blocks):
+          b_number = sb.get_block_number()
+          self.block_list.append(b_number)
+          util.create_empty_block(b_number)
+          available_blocks.append(util.get_block(b_number))
+      return available_blocks
 
