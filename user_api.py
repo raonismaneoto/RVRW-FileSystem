@@ -39,7 +39,7 @@ def print_data(inode):
   data = ''
   for block in inode.block_list:
     block = util.get_block(block)
-    data += json.dumps(block.data)
+    data += json.dumps(block.data) + '\n'
   print data
 
 def write_file(args):
