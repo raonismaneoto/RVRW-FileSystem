@@ -3,7 +3,7 @@
 ## First of all, it's necessary to list some simplifications we've done to make it easier. As follows:
 
 - There is only one directory (the root one).
-- We don't differ the in-core inodes to the disk ones.
+- We don't differ the in-core inodes from the disk ones.
 - Despite the block's size has been set to 4096B we consider them full if there is any data inside of it.
 But the data can also be 4096 large.
 - The disk of the filesystem is abstracted by file.
@@ -25,6 +25,6 @@ Once mount has been called there are three possible commands as follows:
 - read filename
 - write filename data*
 
-* Everything after filename is interpreted as data
+*Everything after filename is interpreted as data
 
 
