@@ -14,8 +14,17 @@ There is a simple script responsible for start the fs. It's called start.sh.
 To run the FS for the first time or to restart it, it's necessary to run the follow command: ./start.sh -r.
 In the other cases ./start.sh is enough.
 
-## Structure
+## Structure and flow
 Everything starts on the setup.py module. It is responsible for create our disk abstraction (the main file), once it is done the mkfs is called.
-Mkfs 
+Mkfs creates the superblock with some inodes and blocks and save it.
+From now the Fs can be used through the user api, that lives in user_api.py module.
+The fs provides four main operations: [create], [read], [write] and [mount]
+The three first ones can only be used if mount has been called.
+Once mount has been called there are three possible commands as follows:
+- create filename
+- read filename
+- write filename data*
+
+* Everything after filename is interpreted as data
 
 
