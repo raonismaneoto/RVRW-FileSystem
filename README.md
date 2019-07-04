@@ -27,4 +27,6 @@ Once mount has been called there are three possible commands as follows:
 
 *Everything after filename is interpreted as data
 
+There are two simple diagrams in uml package to ilustrate what was described above.
+
 
