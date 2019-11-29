@@ -84,7 +84,7 @@ def create_root_dir():
 def set_root_inode_props(inode, blocks):
   inode.owner = 'root'
   inode.group = 'root'
-  inode.f_type = 'dir'
+  inode.f_type = util.FileType.dir.value
   inode.permissions = 111111111
   inode.links = 1
   inode.disk_addresses = 1
@@ -111,12 +111,28 @@ def create_dir(args):
   util.save(inode.bytefy(), inode.get_offset(), 'disk')
   util.save(sb.bytefy(), 0, 'disk')
 
+def ls(args):
+  sb, root_inode = get_main_obj()
+  inode_number = -1
+  blist = root_inode.block_list
+  inodes = []
+  for block_number in blist:
+    block = util.get_block(block_number)
+    for file_descriptor in block.data:
+      if type(file_descriptor) == dict:
+        name, inode_number = file_descriptor.items()[0]
+        inode = util.get_inode(inode_number)
+        inodes.append(inode.file_name)    
+  print(inodes)
+  return inodes
+
 menu_options = {
   'create': create_file,
   'read': read_file,
   'write': write_file,
   'mount': mount,
-  'mkdir': create_dir
+  'mkdir': create_dir,
+  'ls': ls
 }
 
 while True:
