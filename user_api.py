@@ -10,6 +10,7 @@ def create_file(args):
   sb, root_inode = get_main_obj()
   inode.block_list.append(sb.get_block_number())
   inode.file_name = file_name
+  inode.f_type = util.FileType.file.value
   util.create_empty_inode(sb.isize-1)
   util.create_empty_block(sb.bsize-1)
   util.save(inode.bytefy(), inode.get_offset(), 'disk')
@@ -95,11 +96,27 @@ def save_root_dir(sb, inode):
   util.save(sb.bytefy(), 0, 'disk')
   util.save(inode.bytefy(), inode.get_offset(), 'disk')
 
+def create_dir(args):
+  sb, root_inode = get_main_obj()
+  file_name = args[0]
+  check_file_oneness(file_name)
+  inode = util.get_inode(sb.get_inode_number())
+  root_inode.write({file_name: inode.number})
+  sb, root_inode = get_main_obj()
+  inode.f_type = util.FileType.dir.value
+  inode.block_list.append(sb.get_block_number())
+  inode.file_name = file_name
+  util.create_empty_inode(sb.isize-1)
+  util.create_empty_block(sb.bsize-1)
+  util.save(inode.bytefy(), inode.get_offset(), 'disk')
+  util.save(sb.bytefy(), 0, 'disk')
+
 menu_options = {
   'create': create_file,
   'read': read_file,
   'write': write_file,
-  'mount': mount
+  'mount': mount,
+  'mkdir': create_dir
 }
 
 while True:

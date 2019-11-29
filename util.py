@@ -4,9 +4,14 @@ import os
 from inode import Inode
 from block import Block
 from super_block import SuperBlock
+import enum
 
 false = False
 null = None
+
+class FileType(enum.Enum): 
+    file = 1
+    dir = 2
 
 def load(bytearr):
     stringfied = str(bytearr)
