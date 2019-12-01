@@ -1,6 +1,8 @@
 import util
 import json
 
+working_inode_number = 0
+
 def create_file(args):
   sb, root_inode = get_main_obj()
   file_name = args[0]
@@ -96,12 +98,26 @@ def save_root_dir(sb, inode):
   util.save(sb.bytefy(), 0, 'disk')
   util.save(inode.bytefy(), inode.get_offset(), 'disk')
 
+def get_inodes_from_inode(inode_number):
+  inode = util.get_inode(inode_number)
+  inodes = []
+  for block_number in inode.block_list:
+    block = util.get_block(block_number)
+    for file_descriptor in block.data:
+      if type(file_descriptor) == dict:
+        name, _inode_number = file_descriptor.items()[0]
+        _inode = util.get_inode(_inode_number)
+        inodes.append(_inode)
+  return inodes
+
 def create_dir(args):
-  sb, root_inode = get_main_obj()
   file_name = args[0]
+  sb = util.get_sb()
+  inode = util.get_inode(working_inode_number)
+  # TODO update this method to parse inode number by param
   check_file_oneness(file_name)
-  inode = util.get_inode(sb.get_inode_number())
-  root_inode.write({file_name: inode.number})
+  _inode = util.get_inode(sb.get_inode_number())
+  inode.write({file_name: _inode.number})
   sb, root_inode = get_main_obj()
   inode.f_type = util.FileType.dir.value
   inode.block_list.append(sb.get_block_number())
@@ -112,19 +128,29 @@ def create_dir(args):
   util.save(sb.bytefy(), 0, 'disk')
 
 def ls(args):
-  sb, root_inode = get_main_obj()
-  inode_number = -1
-  blist = root_inode.block_list
-  inodes = []
-  for block_number in blist:
-    block = util.get_block(block_number)
-    for file_descriptor in block.data:
-      if type(file_descriptor) == dict:
-        name, inode_number = file_descriptor.items()[0]
-        inode = util.get_inode(inode_number)
-        inodes.append(inode.file_name)    
-  print(inodes)
-  return inodes
+  result = []
+  inodes = get_inodes_from_inode(working_inode_number)
+  for inode in inodes:
+    result.append(inode.file_name)
+  print(result)
+  return result
+
+def cd(args):
+  global working_inode_number
+  dir_name = args[0]
+  inodes = get_inodes_from_inode(working_inode_number)
+  matches = [i for i in inodes if i.file_name == dir_name]
+  if len(matches) > 1:
+    print("Fatal Error: Found two inodes with same name")
+  elif len(matches) == 1:
+    match = matches[0]
+    if match.f_type == util.FileType.dir.value:
+      working_inode_number = match.number
+      print("Changed current directory to " + match.file_name)
+    else:
+      print(dir_name + " is not an directory!")
+  else:
+    print("Not found directory with name " + dir_name)
 
 menu_options = {
   'create': create_file,
@@ -132,7 +158,8 @@ menu_options = {
   'write': write_file,
   'mount': mount,
   'mkdir': create_dir,
-  'ls': ls
+  'ls': ls,
+  'cd': cd
 }
 
 while True:
