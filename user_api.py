@@ -12,7 +12,7 @@ def create_file(args):
   sb, root_inode = get_main_obj()
   inode.block_list.append(sb.get_block_number())
   inode.file_name = file_name
-  inode.f_type = util.FileType.file.value
+  inode.f_type = util.FileType.regular.value
   util.create_empty_inode(sb.isize-1)
   util.create_empty_block(sb.bsize-1)
   util.save(inode.bytefy(), inode.get_offset(), 'disk')
@@ -113,18 +113,18 @@ def get_inodes_from_inode(inode_number):
 def create_dir(args):
   file_name = args[0]
   sb = util.get_sb()
-  inode = util.get_inode(working_inode_number)
+  working_inode = util.get_inode(working_inode_number)
   # TODO update this method to parse inode number by param
   check_file_oneness(file_name)
-  _inode = util.get_inode(sb.get_inode_number())
-  inode.write({file_name: _inode.number})
-  sb, root_inode = get_main_obj()
+  inode = util.get_inode(sb.get_inode_number())
   inode.f_type = util.FileType.dir.value
   inode.block_list.append(sb.get_block_number())
   inode.file_name = file_name
+  inode.write({'.': inode.number})
+  inode.write({'..': working_inode_number})
+  working_inode.write({file_name: inode.number})
   util.create_empty_inode(sb.isize-1)
   util.create_empty_block(sb.bsize-1)
-  util.save(inode.bytefy(), inode.get_offset(), 'disk')
   util.save(sb.bytefy(), 0, 'disk')
 
 def ls(args):
@@ -171,4 +171,3 @@ while True:
     break
   operation = menu_options[user_input[0]]
   operation(user_input[1:])
-

@@ -10,7 +10,7 @@ false = False
 null = None
 
 class FileType(enum.Enum): 
-    file = 1
+    regular = 1
     dir = 2
 
 def load(bytearr):
