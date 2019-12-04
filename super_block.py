@@ -3,7 +3,7 @@ import os
 
 class SuperBlock(Fs):
 
-  def __init__(self, size=2*1024*1024, bsize=None, f_blocks_list=None, isize=None, ifree_list=None):
+  def __init__(self, size, bsize, f_blocks_list, isize, ifree_list):
     self.size = size
     self.bsize = bsize
     self.f_blocks_list = f_blocks_list

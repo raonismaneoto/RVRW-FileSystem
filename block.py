@@ -1,10 +1,11 @@
 from Fs import Fs
 import util
+import constants
 
 class Block(Fs):
 
-	def __init__(self, size=4096, number=None):
-		self.start_offset = (2*1024*1024 + 1) + (4096*200*12) + 1
+	def __init__(self, size=constants.BLOCK_SIZE, number=None):
+		self.start_offset = constants.SUPER_BLOCK_SIZE + (constants.INODES_AMOUNT + 1) * constants.INODE_SIZE
 		self.size = size
 		self.number = number
 		self.data = []
@@ -17,4 +18,4 @@ class Block(Fs):
 		util.save(self.bytefy(), self.get_offset(), 'disk')
 
 	def get_offset(self):
-		return self.start_offset + (self.number * self.size) + 1
+		return self.start_offset + self.number * self.size

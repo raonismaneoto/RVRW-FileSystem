@@ -1,6 +1,7 @@
 from Fs import Fs
 import util
 import json
+import constants
 
 block_size = 4096
 
@@ -29,10 +30,10 @@ class Inode(Fs):
         # The position of this inode on the disk 
         self.number = number
         self.reference_count = reference_count
-        self.start_offset = 2*1024*1024 + 1
+        self.start_offset =  constants.SUPER_BLOCK_SIZE
         self.block_list = []
         self.file_name = ''
-        self.size = 4096*12
+        self.size = constants.INODE_SIZE
 
     def write(self, data):
     	blocks_quantity = self._get_blocks_quantity(data)
@@ -43,7 +44,7 @@ class Inode(Fs):
     	util.save(self.bytefy(), self.get_offset(), 'disk')
 
     def get_offset(self):
-    	return self.start_offset + (self.number * self.size) +1
+    	return self.start_offset + self.number * self.size
 
     def _get_blocks_quantity(self, data):
     	data_size = len(bytearray(json.dumps(data)))
