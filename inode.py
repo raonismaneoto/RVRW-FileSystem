@@ -33,10 +33,10 @@ class Inode(Fs):
         self.start_offset =  constants.SUPER_BLOCK_SIZE
         self.block_list = []
         self.file_name = ''
-        self.size = constants.INODE_SIZE
+        self.size = 0
 
     def write(self, data):
-    	blocks_quantity = self._get_blocks_quantity(data)
+    	blocks_quantity = self.calculate_blocks_quantity(data)
     	blocks_list = self._get_available_blocks(blocks_quantity)
     	data = bytearray(json.dumps(data))
     	for block in blocks_list:
@@ -46,7 +46,7 @@ class Inode(Fs):
     def get_offset(self):
     	return self.start_offset + self.number * self.size
 
-    def _get_blocks_quantity(self, data):
+    def calculate_blocks_quantity(self, data):
     	data_size = len(bytearray(json.dumps(data)))
     	blocks_quantity = data_size/block_size
     	if data_size%block_size != 0:
