@@ -11,11 +11,11 @@ class Block(Fs):
 		self.data = []
 
 	def is_full(self):
-		return len(self.data) != 0
+		return size < len(self.bytefy())
 
-	def write(self, data):
+	def write(self, data, offset=self.get_offset()):
 		self.data.append(data)
-		util.save(self.bytefy(), self.get_offset(), 'disk')
+		util.save(self.bytefy(), offset, 'disk')
 	
 	def save(self):
 		util.save(self.bytefy(), self.get_offset(), 'disk')
