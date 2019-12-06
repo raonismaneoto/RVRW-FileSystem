@@ -72,16 +72,11 @@ def isMounted():
   return root_dir.file_name == 'root'
 
 def mount(args):
-  create_root_dir()
-
-def create_root_dir():
   sb = util.get_sb()
   inode = util.get_inode(sb.get_inode_number())
   blocks = [sb.get_block_number()]
-  util.create_empty_inode(100)
-  util.create_empty_block(100)
   set_root_inode_props(inode, blocks)
-  save_root_dir(sb, inode)
+  inode.save()
 
 def set_root_inode_props(inode, blocks):
   inode.owner = 'root'
@@ -92,11 +87,6 @@ def set_root_inode_props(inode, blocks):
   inode.disk_addresses = 1
   inode.block_list = blocks
   inode.file_name = 'root'
-
-def save_root_dir(sb, inode):
-  sb.root_size = inode.get_size()
-  util.save(sb.bytefy(), 0, 'disk')
-  util.save(inode.bytefy(), inode.get_offset(), 'disk')
 
 def get_inodes_from_inode(inode_number):
   inode = util.get_inode(inode_number)

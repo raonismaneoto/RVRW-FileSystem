@@ -5,6 +5,7 @@ from inode import Inode
 from block import Block
 from super_block import SuperBlock
 import enum
+import constants
 
 false = False
 null = None
@@ -40,13 +41,13 @@ def instance_from_obj(class_constructor, obj):
     return instance
 
 def get_sb():
-    sb_bytearr = read('disk', 0, 2*1024*1024)
+    sb_bytearr = read('disk', 0, constants.SUPER_BLOCK_SIZE)
     sb_json = load(sb_bytearr)
     sb_instance = instance_from_obj(SuperBlock, sb_json)
     return sb_instance
 
 def get_inode(number):
-    inode_bytearr = read('disk', (2*1024*1024 + 1) + (4096*12*number) + 1, 4096*12)
+    inode_bytearr = read('disk', constants.SUPER_BLOCK_SIZE + (number * constants.INODE_SIZE), constants.INODE_SIZE)
     inode_json = load(inode_bytearr)
     inode_instance = instance_from_obj(Inode, inode_json)
     return inode_instance
