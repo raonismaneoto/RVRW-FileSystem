@@ -11,13 +11,11 @@ def mkfs(disk_path):
 	super_block = SuperBlock(SUPER_BLOCK_SIZE, f_blocks_list, inodes_list)
 	util.save(super_block.bytefy(), 0, 'disk')
 
-
 def create_f_blocks_list():
 	l = []
 	for i in xrange(BLOCKS_AMOUNT):
 		current = util.Block(number=i)
-		file_position = current.get_offset()
-		util.save(current.bytefy(), file_position, 'disk')
+		current.save()
 		l.append(current.number)
 	return l
 
@@ -25,7 +23,6 @@ def create_inodes_list():
 	l = []
 	for i in xrange(INODES_AMOUNT):
 		current = util.Inode(number=i)
-		file_position = current.get_offset()
-		util.save(current.bytefy(), file_position, 'disk')
+		current.save()
 		l.append(current.number)
 	return l

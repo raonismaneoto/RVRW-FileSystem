@@ -43,6 +43,9 @@ class Inode(Fs):
     		block.write(util.load(data[:(block_size-1)]))
     	util.save(self.bytefy(), self.get_offset(), 'disk')
 
+    def save(self):
+      util.save(self.bytefy(), self.get_offset(), 'disk')
+
     def get_offset(self):
     	return self.start_offset + self.number * self.size
 
