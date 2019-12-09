@@ -4,19 +4,15 @@ import json
 working_inode_number = 0
 
 def create_file(args):
-  sb, root_inode = get_main_obj()
   file_name = args[0]
-  check_file_oneness(file_name)
+  sb, working_inode = util.get_sb(), util.get(working_inode_number)
+  # check_file_oneness(file_name)
   inode = util.get_inode(sb.get_inode_number())
-  root_inode.write({file_name: inode.number})
-  sb, root_inode = get_main_obj()
-  inode.block_list.append(sb.get_block_number())
   inode.file_name = file_name
   inode.f_type = util.FileType.regular.value
-  util.create_empty_inode(sb.isize-1)
-  util.create_empty_block(sb.bsize-1)
-  util.save(inode.bytefy(), inode.get_offset(), 'disk')
-  util.save(sb.bytefy(), 0, 'disk')
+  inode.block_list.append(sb.get_block_number())
+  inode.save()
+  working_inode.write({file_name: inode.number})
 
 def read_file(args):
   sb, root_inode = get_main_obj()
