@@ -23,6 +23,13 @@ def get_inodes_from_inode(inode_number):
       inodes.append(util.get_inode(i))
   return inodes
 
+def get_entries(inode_number):
+  inode = util.get_inode(inode_number)
+  entries = []
+  for block_number in inode.block_list:
+    block = util.get_block(block_number)
+    entries += block.data.get("entries").keys()
+
 def create_file(args):
   file_name = args[0]
   sb, working_inode = util.get_sb(), util.get_inode(working_inode_number)
@@ -102,25 +109,20 @@ def create_dir(args):
   sb = util.get_sb()
   working_inode = util.get_inode(working_inode_number)
   # TODO update this method to parse inode number by param
-  check_file_oneness(file_name)
+  #check_file_oneness(file_name)
   inode = util.get_inode(sb.get_inode_number())
   inode.f_type = util.FileType.dir.value
   inode.block_list.append(sb.get_block_number())
   inode.file_name = file_name
-  inode.write({'.': inode.number})
-  inode.write({'..': working_inode_number})
-  working_inode.write({file_name: inode.number})
-  util.create_empty_inode(sb.isize-1)
-  util.create_empty_block(sb.bsize-1)
+  inode.write(('.', inode.number))
+  inode.write(('..', working_inode_number))
+  working_inode.write((file_name, inode.number))
   util.save(sb.bytefy(), 0, 'disk')
 
 def ls(args):
-  result = []
-  inodes = get_inodes_from_inode(working_inode_number)
-  for inode in inodes:
-    result.append(inode.file_name)
-  print(result)
-  return result
+  entries = get_entries(working_inode_number)
+  print(entries)
+  return entries
 
 def cd(args):
   global working_inode_number
