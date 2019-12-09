@@ -5,7 +5,7 @@ working_inode_number = 0
 
 def create_file(args):
   file_name = args[0]
-  sb, working_inode = util.get_sb(), util.get(working_inode_number)
+  sb, working_inode = util.get_sb(), util.get_inode(working_inode_number)
   # check_file_oneness(file_name)
   inode = util.get_inode(sb.get_inode_number())
   inode.file_name = file_name
