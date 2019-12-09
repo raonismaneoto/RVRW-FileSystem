@@ -34,11 +34,11 @@ class Inode(Fs):
         self.size = size
 
     def write(self, data):
-    	blocks_quantity = self.calculate_blocks_quantity(data)
-    	blocks_list = self._get_available_blocks(blocks_quantity)
-    	data = bytearray(json.dumps(data))
-    	for block in blocks_list:
-    		block.write(util.load(data[:(constants.BLOCK_SIZE-1)]))
+      blocks_quantity = self.calculate_blocks_quantity(data)
+      blocks_list = self._get_available_blocks(blocks_quantity)
+      data = bytearray(json.dumps(data))
+      for block in blocks_list:
+        block.write(util.load(data[:(constants.BLOCK_SIZE-1)]))
       self.save()
 
     def save(self):
