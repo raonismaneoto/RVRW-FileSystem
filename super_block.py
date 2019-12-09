@@ -4,14 +4,10 @@ import constants
 
 class SuperBlock(Fs):
 
-  def __init__(self, size, f_blocks_list, ifree_list):
+  def __init__(self, size=constants.SUPER_BLOCK_SIZE, f_blocks_list=None, ifree_list=None):
     self.size = size
-    self.bsize = constants.BLOCKS_AMOUNT
     self.f_blocks_list = f_blocks_list
-    self.isize = constants.INODES_AMOUNT
     self.ifree_list = ifree_list
-    self.modified = False
-    self.root_size = 0
 
   def get_inode_number(self):
     inode_number = self.ifree_list.pop(0)
