@@ -17,6 +17,12 @@ class Block(Fs):
 		self.data.append(data)
 		self.save()
 	
+	def write_dir(self, entry, inode_number):
+		if len(self.data) == 0:
+			self.data = {}
+		self.data[entry] = inode_number
+		self.save()
+	
 	def save(self):
 		util.save(self.bytefy(), self.get_offset(), 'disk')
 
