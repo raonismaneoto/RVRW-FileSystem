@@ -53,7 +53,8 @@ def get_inode(number):
     return inode_instance
     
 def get_block(number):
-    block_bytearr = read('disk', ((2*1024*1024 + 1) + (4096*200*12) + 1) + 4096*number + 1, 4096)
+    offset = (constants.SUPER_BLOCK_SIZE + (constants.INODES_AMOUNT + 1) * constants.INODE_SIZE) + number * constants.BLOCK_SIZE
+    block_bytearr = read('disk', offset, constants.BLOCK_SIZE)
     block_json = load(block_bytearr)
     block_instance = instance_from_obj(Block, block_json)
     return block_instance
