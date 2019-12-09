@@ -8,7 +8,7 @@ block_size = 4096
 class Inode(Fs):
 
     def __init__(self, number=None, owner=None, group=None, f_type=None, permissions=None, last_modification=None, 
-    last_f_modification=None, last_access=None, disk_addresses=None, size=None, status=None, logical_device=None, 
+    last_f_modification=None, last_access=None, disk_addresses=None, size=constants.INODE_SIZE, status=None, logical_device=None, 
     reference_count=None, links=None):
         ### These are the fields of the inode on disk
         self.owner = owner
@@ -33,7 +33,7 @@ class Inode(Fs):
         self.start_offset =  constants.SUPER_BLOCK_SIZE
         self.block_list = []
         self.file_name = ''
-        self.size = 0
+        self.size = size
 
     def write(self, data):
     	blocks_quantity = self.calculate_blocks_quantity(data)
