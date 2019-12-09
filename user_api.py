@@ -3,6 +3,20 @@ import json
 
 working_inode_number = 0
 
+def get_inode(file_name):
+  inode = None
+  working_inode = util.get_inode(working_inode_number)
+  inode_number = -1
+  for block_number in working_inode.block_list:
+    block = util.get_block(block_number)
+    for file_descriptor in block.data:
+      if type(file_descriptor) == dict and file_name in file_descriptor.keys():
+        inode_number = file_descriptor[file_name]
+        break
+  if inode_number != -1:
+    inode = util.get_inode(inode_number)
+  return inode
+
 def create_file(args):
   file_name = args[0]
   sb, working_inode = util.get_sb(), util.get_inode(working_inode_number)
@@ -15,21 +29,12 @@ def create_file(args):
   working_inode.write({file_name: inode.number})
 
 def read_file(args):
-  sb, root_inode = get_main_obj()
   file_name = args[0]
-  inode_number = -1
-  blist = root_inode.block_list
-  inode = {}
-  for block_number in blist:
-    block = util.get_block(block_number)
-    for file_descriptor in block.data:
-      if type(file_descriptor) == dict and file_name in file_descriptor.keys():
-        inode_number = file_descriptor[file_name]
-        break
-  if inode_number != -1:
-    inode = util.get_inode(inode_number)
-  print_data(inode)
-  return inode
+  inode = get_inode(file_name)
+  if inode != None:
+    print_data(inode)
+  else:
+    print("File not found")
 
 def print_data(inode):
   if inode == {}:
@@ -44,9 +49,9 @@ def print_data(inode):
 def write_file(args):
   file_name = args[0]
   data = [arg for arg in args[1:]]
-  inode = read_file([file_name])
+  inode = get_inode(file_name)
 
-  if inode == {}:
+  if inode == None:
     raise Exception("The file %s does not exist" %file_name)
 
   inode.write(data)
