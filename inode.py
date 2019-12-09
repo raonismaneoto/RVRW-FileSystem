@@ -36,16 +36,11 @@ class Inode(Fs):
     def write(self, data):
       blocks_quantity = self.calculate_blocks_quantity(data)
       blocks_list = self._get_available_blocks(blocks_quantity)
-      if self.f_type == util.FileType.dir.value:
-        entry, inode_number = data
-        for block in blocks_list:
-          block.write_dir(entry, inode_number)
+      for block in blocks_list:
+        block.write(data)
         # data = bytearray(json.dumps(data))
         # for block in blocks_list:
         #   block.write(util.load(data[:(constants.BLOCK_SIZE-1)]))
-      else:
-        data = bytearray(data)  
-        block.write(data)
       self.save()
 
     def save(self):

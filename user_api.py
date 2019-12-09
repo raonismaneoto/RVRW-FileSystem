@@ -9,13 +9,19 @@ def get_inode(file_name):
   inode_number = -1
   for block_number in working_inode.block_list:
     block = util.get_block(block_number)
-    for file_descriptor in block.data:
-      if type(file_descriptor) == dict and file_name in file_descriptor.keys():
-        inode_number = file_descriptor[file_name]
-        break
-  if inode_number != -1:
+    inode_number = block.data.get("entries").get(file_name)
+  if inode_number != None:
     inode = util.get_inode(inode_number)
   return inode
+
+def get_inodes_from_inode(inode_number):
+  inode = util.get_inode(inode_number)
+  inodes = []
+  for block_number in inode.block_list:
+    block = util.get_block(block_number)
+    for i in block.data.get("entries").values():
+      inodes.append(util.get_inode(i))
+  return inodes
 
 def create_file(args):
   file_name = args[0]
@@ -26,7 +32,7 @@ def create_file(args):
   inode.f_type = util.FileType.regular.value
   inode.block_list.append(sb.get_block_number())
   inode.save()
-  working_inode.write({file_name: inode.number})
+  working_inode.write((file_name, inode.number))
 
 def read_file(args):
   file_name = args[0]
@@ -43,7 +49,9 @@ def print_data(inode):
   data = ''
   for block in inode.block_list:
     block = util.get_block(block)
-    data += json.dumps(block.data) + '\n'
+    print(block.data.get("contents"))
+    for c in block.data.get("contents"):
+      data += c + '\n'
   print data
 
 def write_file(args):
@@ -88,18 +96,6 @@ def set_root_inode_props(inode, blocks):
   inode.disk_addresses = 1
   inode.block_list = blocks
   inode.file_name = 'root'
-
-def get_inodes_from_inode(inode_number):
-  inode = util.get_inode(inode_number)
-  inodes = []
-  for block_number in inode.block_list:
-    block = util.get_block(block_number)
-    for file_descriptor in block.data:
-      if type(file_descriptor) == dict:
-        name, _inode_number = file_descriptor.items()[0]
-        _inode = util.get_inode(_inode_number)
-        inodes.append(_inode)
-  return inodes
 
 def create_dir(args):
   file_name = args[0]
