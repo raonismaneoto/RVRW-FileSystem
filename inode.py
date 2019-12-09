@@ -3,8 +3,6 @@ import util
 import json
 import constants
 
-block_size = 4096
-
 class Inode(Fs):
 
     def __init__(self, number=None, owner=None, group=None, f_type=None, permissions=None, last_modification=None, 
@@ -40,8 +38,8 @@ class Inode(Fs):
     	blocks_list = self._get_available_blocks(blocks_quantity)
     	data = bytearray(json.dumps(data))
     	for block in blocks_list:
-    		block.write(util.load(data[:(block_size-1)]))
-    	util.save(self.bytefy(), self.get_offset(), 'disk')
+    		block.write(util.load(data[:(constants.BLOCK_SIZE-1)]))
+      self.save()
 
     def save(self):
       util.save(self.bytefy(), self.get_offset(), 'disk')
@@ -51,8 +49,8 @@ class Inode(Fs):
 
     def calculate_blocks_quantity(self, data):
     	data_size = len(bytearray(json.dumps(data)))
-    	blocks_quantity = data_size/block_size
-    	if data_size%block_size != 0:
+    	blocks_quantity = data_size/constants.BLOCK_SIZE
+    	if data_size%constants.BLOCK_SIZE != 0:
     		blocks_quantity += 1
     	return blocks_quantity
 
