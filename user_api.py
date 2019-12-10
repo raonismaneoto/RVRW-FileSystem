@@ -14,6 +14,15 @@ def get_inode(file_name):
     inode = util.get_inode(inode_number)
   return inode
 
+def get_inode_by_entry(entry):
+  working_inode = util.get_inode(working_inode_number)
+  inode_number = None
+  for block_number in working_inode.block_list:
+    block = util.get_block(block_number)
+    inode_number = block.data.get("entries").get(entry)
+  return inode_number
+
+
 def get_inodes_from_inode(inode_number):
   inode = util.get_inode(inode_number)
   inodes = []
@@ -29,6 +38,7 @@ def get_entries(inode_number):
   for block_number in inode.block_list:
     block = util.get_block(block_number)
     entries += block.data.get("entries").keys()
+  return entries
 
 def create_file(args):
   file_name = args[0]
@@ -56,7 +66,6 @@ def print_data(inode):
   data = ''
   for block in inode.block_list:
     block = util.get_block(block)
-    print(block.data.get("contents"))
     for c in block.data.get("contents"):
       data += c + '\n'
   print data
@@ -127,17 +136,10 @@ def ls(args):
 def cd(args):
   global working_inode_number
   dir_name = args[0]
-  inodes = get_inodes_from_inode(working_inode_number)
-  matches = [i for i in inodes if i.file_name == dir_name]
-  if len(matches) > 1:
-    print("Fatal Error: Found two inodes with same name")
-  elif len(matches) == 1:
-    match = matches[0]
-    if match.f_type == util.FileType.dir.value:
-      working_inode_number = match.number
-      print("Changed current directory to " + match.file_name)
-    else:
-      print(dir_name + " is not an directory!")
+  inode_number = get_inode_by_entry(dir_name)
+  if inode_number != None:
+      working_inode_number = inode_number
+      print("Changed current directory to " + dir_name)
   else:
     print("Not found directory with name " + dir_name)
 
