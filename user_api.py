@@ -138,8 +138,12 @@ def cd(args):
   dir_name = args[0]
   inode_number = get_inode_by_entry(dir_name)
   if inode_number != None:
+    inode = util.get_inode(inode_number)
+    if inode.f_type == util.FileType.dir.value:
       working_inode_number = inode_number
       print("Changed current directory to " + dir_name)
+    else:
+      print(dir_name + " is not an directory")
   else:
     print("Not found directory with name " + dir_name)
 
