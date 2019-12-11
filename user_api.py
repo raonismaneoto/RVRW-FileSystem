@@ -43,7 +43,9 @@ def get_entries(inode_number):
 def create_file(args):
   file_name = args[0]
   sb, working_inode = util.get_sb(), util.get_inode(working_inode_number)
-  # check_file_oneness(file_name)
+  if check_file_oneness(working_inode, file_name):
+    print("A file with this name already exists")
+    return
   inode = util.get_inode(sb.get_inode_number())
   inode.file_name = file_name
   inode.f_type = util.FileType.regular.value
@@ -80,14 +82,13 @@ def write_file(args):
 
   inode.write(data)
 
-def check_file_oneness(file_name):
-  sb, root_inode = get_main_obj()
-  blist = root_inode.block_list
-  for block_number in blist:
+def check_file_oneness(inode, file_name):
+  for block_number in inode.block_list:
     block = util.get_block(block_number)
-    for file_descriptor in block.data:
-      if type(file_descriptor) == dict and file_name in file_descriptor.keys():
-        raise Exception("The file with name %s already exists" %file_name)
+    if file_name in block.data.get("entries"):
+      return True
+  return False
+      # raise Exception("The file with name %s already exists" %file_name)
 
 def get_main_obj():
   return [util.get_sb(), util.get_inode(0)]
@@ -118,7 +119,9 @@ def create_dir(args):
   sb = util.get_sb()
   working_inode = util.get_inode(working_inode_number)
   # TODO update this method to parse inode number by param
-  #check_file_oneness(file_name)
+  if check_file_oneness(working_inode, file_name):
+    print("A file with this name already exists")
+    return
   inode = util.get_inode(sb.get_inode_number())
   inode.f_type = util.FileType.dir.value
   inode.block_list.append(sb.get_block_number())
