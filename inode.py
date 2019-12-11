@@ -1,13 +1,12 @@
 from Fs import Fs
 import util
 import json
-
-block_size = 4096
+import constants
 
 class Inode(Fs):
 
     def __init__(self, number=None, owner=None, group=None, f_type=None, permissions=None, last_modification=None, 
-    last_f_modification=None, last_access=None, disk_addresses=None, size=None, status=None, logical_device=None, 
+    last_f_modification=None, last_access=None, disk_addresses=None, size=constants.INODE_SIZE, status=None, logical_device=None, 
     reference_count=None, links=None):
         ### These are the fields of the inode on disk
         self.owner = owner
@@ -29,26 +28,31 @@ class Inode(Fs):
         # The position of this inode on the disk 
         self.number = number
         self.reference_count = reference_count
-        self.start_offset = 2*1024*1024 + 1
+        self.start_offset =  constants.SUPER_BLOCK_SIZE
         self.block_list = []
         self.file_name = ''
-        self.size = 4096*12
+        self.size = size
 
     def write(self, data):
-    	blocks_quantity = self._get_blocks_quantity(data)
-    	blocks_list = self._get_available_blocks(blocks_quantity)
-    	data = bytearray(json.dumps(data))
-    	for block in blocks_list:
-    		block.write(util.load(data[:(block_size-1)]))
-    	util.save(self.bytefy(), self.get_offset(), 'disk')
+      blocks_quantity = self.calculate_blocks_quantity(data)
+      blocks_list = self._get_available_blocks(blocks_quantity)
+      for block in blocks_list:
+        block.write(data)
+        # data = bytearray(json.dumps(data))
+        # for block in blocks_list:
+        #   block.write(util.load(data[:(constants.BLOCK_SIZE-1)]))
+      self.save()
+
+    def save(self):
+      util.save(self.bytefy(), self.get_offset(), 'disk')
 
     def get_offset(self):
-    	return self.start_offset + (self.number * self.size) +1
+    	return self.start_offset + self.number * self.size
 
-    def _get_blocks_quantity(self, data):
+    def calculate_blocks_quantity(self, data):
     	data_size = len(bytearray(json.dumps(data)))
-    	blocks_quantity = data_size/block_size
-    	if data_size%block_size != 0:
+    	blocks_quantity = data_size/constants.BLOCK_SIZE
+    	if data_size%constants.BLOCK_SIZE != 0:
     		blocks_quantity += 1
     	return blocks_quantity
 
