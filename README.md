@@ -2,7 +2,6 @@
 
 ## First of all, it's necessary to list some simplifications we've done to make it easier. As follows:
 
-- There is only one directory (the root one).
 - We don't differ the in-core inodes from the disk ones.
 - Despite the block's size has been set to 4096B we consider them full if there is any data inside of it.
 But the data can also be 4096 large.
